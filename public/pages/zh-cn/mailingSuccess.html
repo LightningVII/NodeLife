@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="../../css/mui.css" rel="stylesheet" />
+    <link href="../../css/sm.css" rel="stylesheet" />
+    <link href="../../fonts/iconfont.css" rel="stylesheet" />
+    <link href="../../css/app/common.css" rel="stylesheet" />
+    <style type="text/css">
+        .list-block > ul {
+            width: 100%;
+            text-align: center;
+            background: #eee;
+        }
+        
+        .list-block{
+        	padding: 0 0.75rem;
+        	background: #eee;
+        }
+        .success-info{
+        	margin: 0 0.75rem;
+    		border-bottom: 1px solid #ddd;
+    		padding: 3rem;
+    		padding-top: 0.5rem;
+        }
+        
+        .success-info .iconfont{
+        	color: green;
+		    font-size: 4rem;
+		    margin: 0 auto;
+		    padding: 0.5rem 0px;
+		    display: block;
+		    width: 4rem;
+        }
+        
+        
+        .btn-contanier{
+    	    overflow: hidden;
+		    margin: 0 0.75rem;
+		    padding: 0;
+		    padding-bottom: 0.5rem;
+        	list-style: none;
+        }
+        .btn-contanier li{
+        	width: 50%;
+        	float: left;
+        }
+        .btn-contanier li a{
+        	width: 100%;
+        	height: 2rem;
+        	line-height: 2.2rem;
+        }
+        .btn-contanier li:nth-child(odd){
+        	padding-right: 0.37rem;
+        }
+        .btn-contanier li:nth-child(even){
+        	padding-left: 0.37rem;
+        }
+        .botton-primary-border{
+        	border: 1px solid #E55A5F;
+        	color: #E55A5F;
+        }
+        .contact{
+			font-size: 0.8rem;
+        }
+        .contact i{
+        	font-size: 0.8rem;
+        }
+        i{
+        	margin-right: 6px;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="page-group">
+        <div class="page">
+            <header class="bar bar-nav bg-263846">
+                <a class="pull-left iconfont icon-back mui-action-back"></a>
+                <h1 class="title"  class="mui-action-back">送单上车</h1>
+            </header>
+
+            <div class="content pull-to-refresh-content infinite-scroll" >
+            	<div style="background-color: #fff;">
+	                <div class="success-info">
+	                	<i class="iconfont icon-finish"></i>
+	                	<div style="text-align: center;margin-top: -1.8rem;">预约成功</div>
+	                </div>
+	                
+	                <div class="content-block m075 contact">
+	            		<i class="iconfont icon-information"></i>我们会尽快安排人员为您送单，请您保持手机畅通，以便送单小哥第一时间联系您。</a>
+	                </div>
+	                <ul class='btn-contanier'> 
+	                	<li><a es-href="home" class="button button-primary pull-left botton-primary-border border-radius-8">返回作业</a></li>
+	                	<li><a onclick="mui.back();" class="button button-fill button-primary pull-left border-radius-8">查看详情</a></li>
+	                </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/lodash.js"></script>
+    <script src="../../js/handlebars.min.js"></script>
+    <script src="../../js/mui.js"></script>
+    <script src="../../js/sm.js"></script>
+    <script src="../../js/app.js"></script>
+    <script src="../../js/i18n.js"></script>
+    <script src="../../js/util.js"></script>
+    <script type="text/javascript">
+        window.app.ready(function(mui) {
+            var _this = this
+            this.init = function() {
+                $.init();
+                if (window.app.refresh) {
+                    window.app.refresh(function() {
+                    	
+                    });
+                }
+            }
+            this.init()
+        })
+    </script>
+</body>
+
+</html>

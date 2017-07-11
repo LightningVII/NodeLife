@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <!--<link href="../../css/mui.css" rel="stylesheet" />-->
+    <link href="../../css/sm.css" rel="stylesheet" />
+    <link href="../../fonts/iconfont.css" rel="stylesheet" />
+    <link href="../../css/app/common.css" rel="stylesheet" />
+    <link href="../../css/app/lookForGoods.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="page-group">
+        <div class="page">
+            <!--<header class="bar bar-nav bg-263846">
+                <h1 class="title">找货</h1>
+            </header>-->
+            <div>
+            		<div class="buttons-tab bg-6a7d8f" id="js-changed-table">
+				    <a href="#tab1" class="tab-link button active" data-value="BIDDING">实单区</a>
+				    <a href="#tab2" class="tab-link button" data-value="NEGOTIATE">议价区</a>
+			 	</div>
+			 	<div class="content-block">
+			 		 <div class="tabs">
+			 		 	<div id="tab1" class="tab active"></div>
+			 		 	<div id="tab2" class="tab">
+			 		 		<div class="bar bar-header-secondary">
+				                <div class="searchbar">
+				                    <a class="searchbar-cancel">取消</a>
+				                    <div class="search-input">
+				                        <label class="iconfont icon-search" for="search"></label>
+				                        <input type="search" id='search' placeholder='输入关键字...' />
+				                    </div>
+				                </div>
+				            </div>
+			 		 		<div class="content pull-to-refresh-content infinite-scroll" data-ptr-distance="" data-distance="100">
+				                <div class="card-container">
+				                    <div id="card-container-list"  class="margin-bottom">
+				                    </div>
+				                    <div class="infinite-scroll-preloader">
+				                        <div class="preloader"></div>
+				                    </div>
+				                    <div class="no-data">
+				                        <div>未查询到数据!</div>
+				                    </div>
+				                </div>
+			            		</div>
+			 		 	</div>
+			 		 </div>
+			 	</div>
+            </div>
+
+            <my-nav active="lookForGoods" :ishidebadgeprop="isHideBadge" :biddingnumprop="biddingNum"></my-nav>
+        </div>
+    </div>
+    <div class="popup popup-history" style="background-color: #f2f2f2;">
+        <div class="content-block">
+            <div class="row justify-content-end">
+                <a href="#" class="close-popup">
+                    <i class="pull-right iconfont icon-close"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <div class="searchbar" id="searchBarList">
+                <div class="seargch-input pull-left" style="width: 80%;">
+                    <!--  <label class="icon iconfont icon-search" for="search"></label>-->
+
+                    <input type="search" id='popup_search' placeholder='输入关键字...' style="height: 2.2rem; border-radius: 0;width: 100%;border: 0;" />
+                </div>
+                <a class="button button-fill button-primary pull-right" style="background-color: #e55a5f;width: 20%;">搜索</a>
+            </div>
+        </div>
+        <div class="content-block-title">历史搜索：</div>
+
+        <div class="content-block history-tags"></div>
+    </div>
+    <script id="list-template" type="text/x-handlebars-template">
+        <% _.forEach(items, function(item) { %>
+            <div class="list-block">
+                <div class="flex-1 mes" data-value="${ item.id }">
+
+                    <div class="card-content">
+                        <div class="card-content-inner">
+                            ${ item.message }
+                        </div>
+                    </div>
+                    <div class="card-footer row justify-content-between">
+                        <div>联系人：${item.author}</div>
+                        <div>发布时间：${item.lastUpdateTime}</div>
+                    </div>
+                </div>
+
+                <div class="col-20">
+                    <i class="iconfont icon-tubiao210" onclick="app.callphone('${ item.phone },${ item.mobile }', this)"></i>
+                </div>
+            </div>
+            <%})%>
+    </script>
+    <!--加密解密-->
+    <script src="../../js/encrypt/core.js"></script>
+    <script src="../../js/encrypt/enc-base64.js"></script>
+    <script src="../../js/encrypt/cipher-core.js"></script>
+    <script src="../../js/encrypt/aes.js"></script>
+    <script src="../../js/encrypt/pad-zeropadding.js"></script>
+
+    <script src="../../js/libs/vue.min.js"></script>
+    <script src="../../js/components.js"></script>
+    <script src="../../js/lodash.js"></script>
+    <script src="../../js/mui.js"></script>
+    <script src="../../js/sm.js"></script>
+    <script src="../../js/util.js"></script>
+    <script src="../../js/app.js"></script>
+    <script src="../../js/i18n.js"></script>
+    <script src="../../js/handlebars.min.js"></script>
+    <script src="../../js/app/lookForGoods.js"></script>
+
+</body>
+
+</html>

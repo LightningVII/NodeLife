@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="../../css/mui.css" rel="stylesheet" />
+    <link href="../../css/sm.css" rel="stylesheet" />
+    <link href="../../css/bulma.css" rel="stylesheet" />
+    <link href="../../css/app/common.css" rel="stylesheet" />
+    <link href="../../css/app/tracking.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+        <h1 class="mui-title">货物跟踪
+            <a href="javascript:void(0)" id="refreshBtn" class="mui-icon mui-icon-refresh"></a>
+        </h1>
+        <a id='setting' class="mui-icon mui-icon-bars mui-pull-right"></a>
+    </header>
+
+    <div class="mui-content">
+        <div class="mui-content-padded">
+            <p class="control has-addons">
+                <input class="input is-fullwidth" id="tracking-search-value" type="text" placeholder="请输入运单号/箱号">
+                <a class="button is-danger is-medium" id="trackingBtn">
+                    <span class="mui-icon mui-icon-search"></span>
+                </a>
+            </p>
+            <div id="tracking"></div>
+        </div>
+    </div>
+    <script id="tracking-template" type="text/x-handlebars-template">
+        <div id="truck-tracking-header">
+            <div class="waybill">
+                <label>提单号：</label>{{blNo}}</div>
+            <div>
+                <label>船名/航次：</label>{{{vesselVoyage vessel voyage}}}</div>
+            <div>
+                <label>航线：</label>{{fromPort}}-{{toPort}}</div>
+            <div>
+                <label>起运港车队：</label>{{#if totalNumFromPort}}已提箱（{{pickupNumFromPort}}/{{totalNumFromPort}}）{{/if}}</div>
+            <div>
+                <label>目的港车队：</label>{{#if totalNumToPort}}已提箱（{{departureNumToPort}}/{{totalNumToPort}}）{{/if}}</div>
+            <div id="feedback"></div>
+        </div>
+        <div id="truck-tracking-body">
+            <div id="truck-tracking-left">
+                {{#each containerInfos}}
+                <div class="truck-tracking-left-item">
+                    <div class="truck-tracking-left-body">
+                        <div>{{number}}</div>
+                        <!--<div>{{sizeType}}<span class="split"></span>{{trackingCode currentTrackingCode currentTrackingZone}}</div>-->
+                        <div>{{sizeType}}<span class="split"></span>{{trackingCode2 taskTypeTrackings current}}</div>
+                    </div>
+                    <i class="fa fa-angle-left angle"></i>
+                </div>
+                {{/each}}
+            </div>
+            <div id="truck-tracking-right">
+            </div>
+        </div>
+    </script>
+
+    <script id="tracking-item-template" type="text/x-handlebars-template">
+        {{#each list}}
+        <div class="truck-tracking-item">
+            <span class="split-icon"></span>
+            <div>{{trackStatus}}</div>
+            <div class="time">{{{trackTime}}}</div>
+        </div>
+        {{/each}}
+    </script>
+
+    <script src="../../js/handlebars.min.js"></script>
+    <script src="../../js/mui.js"></script>
+    <script src="../../js/sm.js"></script>
+    <script src="../../js/app.js"></script>
+    <script src="../../js/i18n.js"></script>
+    <script src="../../js/app/tracking.js"></script>
+</body>
+
+</html>
