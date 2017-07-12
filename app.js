@@ -26,7 +26,7 @@ const staticPath = 'public'
 // }))
 
 const index = require('./routes/index');
-const detail = require('./routes/detail');
+
 
 app.proxy = false;
 // app.use(static(path.join(__dirname, staticPath))); error handler
@@ -45,7 +45,7 @@ app.use(async(ctx, next) => {
     console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
-app.use(detail.routes(), detail.allowedMethods());
+// app.use(detail.routes(), detail.allowedMethods());
 app.use(index.routes(), index.allowedMethods());
 
 module.exports = app;

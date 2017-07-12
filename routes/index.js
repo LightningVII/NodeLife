@@ -1,14 +1,15 @@
-var router = require('koa-router')();
+var router = require('koa-router')({
+    prefix: '/api'
+});
 var Mock = require('../mockjs');
+const detail = require('./detail');
 
-router.get('/api/detail/:category/:title', async(ctx, next) => {
-    var data = Object.create(null)
-    console.log("----------params:" + JSON.stringify(ctx.params))
-    console.log("----------state:" + JSON.stringify(ctx.state))
-    console.log("----------query:" + JSON.stringify(ctx.query))
-    data = Mock.mock({
-        'result': {
-            id: ctx.query.id,
+router.use('/detail', detail.routes(), detail.allowedMethods());
+
+router.get('/foo', async(ctx, next) => {
+    var data = Mock.mock({
+        'result|9': [{
+            id: '@increment',
             cname: '@cfirst@clast',
             title: '@ctitle',
             sentence: '@csentence',
@@ -17,18 +18,17 @@ router.get('/api/detail/:category/:title', async(ctx, next) => {
             email: '@email',
             city: '@city',
             img: '@COLORS',
-            'star|1-5': 3,
-            'price|1-100': 100,
+            'age|1-100': 100,
             'state': '@constellations',
             date: '@datetime'
-        }
+        }]
     })
     ctx.body = JSON.stringify(data, null, 4);
-})
+});
 
-router.get('/api/:key', async(ctx, next) => {
+router.get('/:key', async(ctx, next) => {
     var data = Object.create(null)
-    console.log("----------params:" + JSON.stringify(ctx.params))
+    console.log("----++++-----params:" + JSON.stringify(ctx.params))
     console.log("----------state:" + JSON.stringify(ctx.state))
     console.log("----------query:" + JSON.stringify(ctx.query))
     switch (ctx.params.key) {
@@ -76,25 +76,5 @@ router.get('/api/:key', async(ctx, next) => {
 
     ctx.body = JSON.stringify(data, null, 4);
 })
-
-router.get('/foo', async(ctx, next) => {
-    var data = Mock.mock({
-        'result|9': [{
-            id: '@increment',
-            cname: '@cfirst@clast',
-            title: '@ctitle',
-            sentence: '@csentence',
-            paragraph: '@cparagraph',
-            url: '@url',
-            email: '@email',
-            city: '@city',
-            img: '@COLORS',
-            'age|1-100': 100,
-            'state': '@constellations',
-            date: '@datetime'
-        }]
-    })
-    ctx.body = JSON.stringify(data, null, 4);
-});
 
 module.exports = router;

@@ -1,11 +1,9 @@
-var router = require('koa-router')({
-    prefix: '/api/detail'
-});
+var router = require('koa-router')();
 var Mock = require('../mockjs');
 
 router.get('/', async(ctx, next) => {
     var data = Object.create(null)
-    console.log("----------params:" + JSON.stringify(ctx.params))
+    console.log("===========params:" + JSON.stringify(ctx.params))
     console.log("----------state:" + JSON.stringify(ctx.state))
     console.log("----------query:" + JSON.stringify(ctx.query))
     data = Mock.mock({
@@ -30,7 +28,7 @@ router.get('/', async(ctx, next) => {
 
 router.get('/comment/:type', async(ctx, next) => {
     var data = Object.create(null)
-    console.log("----------params:" + JSON.stringify(ctx.params))
+    console.log("----===----params:" + JSON.stringify(ctx.params))
     console.log("----------state:" + JSON.stringify(ctx.state))
     console.log("----------query:" + JSON.stringify(ctx.query))
     switch (ctx.params.type) {
