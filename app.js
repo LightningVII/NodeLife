@@ -8,9 +8,10 @@ const logger = require('koa-logger');
 const static = require('koa-static');
 const Promise = require("bluebird")
 const request = Promise.promisify(require('request'))
-    // const proxy = require('koa-proxy2');
-const proxy = require('koa-proxies');
-const httpsProxyAgent = require('https-proxy-agent')
+
+// const proxy = require('koa-proxy2');
+// const proxy = require('koa-proxies');
+// const httpsProxyAgent = require('https-proxy-agent')
 
 const path = require('path');
 
@@ -25,7 +26,7 @@ const staticPath = 'public'
 // }))
 
 const index = require('./routes/index');
-const users = require('./routes/users');
+const detail = require('./routes/detail');
 
 app.proxy = false;
 // app.use(static(path.join(__dirname, staticPath))); error handler
@@ -44,7 +45,7 @@ app.use(async(ctx, next) => {
     console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
+app.use(detail.routes(), detail.allowedMethods());
 app.use(index.routes(), index.allowedMethods());
-app.use(users.routes(), users.allowedMethods());
 
 module.exports = app;
