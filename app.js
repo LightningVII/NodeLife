@@ -26,8 +26,6 @@ const staticPath = 'public'
 // }))
 
 const index = require('./routes/index');
-
-
 app.proxy = false;
 // app.use(static(path.join(__dirname, staticPath))); error handler
 onerror(app);
@@ -37,11 +35,12 @@ app.use(bodyparser);
 app.use(json());
 app.use(logger());
 
-// app.use(views(__dirname + '/views', {extension: 'jade'})); logger
 app.use(async(ctx, next) => {
     const start = new Date();
     await next();
     const ms = new Date() - start;
+    console.log("----------params:" + JSON.stringify(ctx.params))
+    console.log("----------query:" + JSON.stringify(ctx.query))
     console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
