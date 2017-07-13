@@ -39,14 +39,15 @@ router.get('/ad', async(ctx, next) => {
     ctx.body = JSON.stringify(data, null, 4);
 });
 
-router.get('/ad', async(ctx, next) => {
+router.get('/orderList', async(ctx, next) => {
     const data = Mock.mock({
-        'result|3': [{
-            'items|10': [{
-                link: '/search/' + '@LINK',
-                icon: 'icon-brand' + '@INT(2,100)',
-                text: '@TEXT',
-            }]
+        'result|10': [{
+            title: '@ctitle',
+            distance: '@csentence',
+            commentState: /^[02]{1}$/,
+            price: '@INT(40,100)',
+            img: '@COLORS',
+            id: '@ID'
         }]
     })
     ctx.body = JSON.stringify(data, null, 4);
