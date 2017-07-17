@@ -7,7 +7,6 @@ var user = require('../controller/user');
 // router.prefix('/ws-truck-app/app');
 
 
-router.get('/signup', user.signup)
 router.post('/signup', app.hasBody, user.signup)
 router.post('/verify', app.hasBody, user.verify)
 router.post('/update', app.hasBody, app.hasToken, user.update)

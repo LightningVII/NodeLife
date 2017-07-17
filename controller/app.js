@@ -37,15 +37,15 @@ exports.hasBody = async(ctx, next) => {
     await next()
 }
 
-exports.hasToken = function*(next) {
-    var accessToken = this.query.accessToken
+exports.hasToken = async(ctx, next) => {
+    var accessToken = ctx.query.accessToken
 
     if (!accessToken) {
-        accessToken = this.request.body.accessToken
+        accessToken = ctx.request.body.accessToken
     }
 
     if (!accessToken) {
-        this.body = {
+        ctx.body = {
             success: false,
             err: '钥匙丢了'
         }
@@ -53,13 +53,12 @@ exports.hasToken = function*(next) {
         return next
     }
 
-    var user = yield User.findOne({
-            accessToken: accessToken
-        })
-        .exec()
+    var user = await User.findOne({
+        accessToken: accessToken
+    })
 
     if (!user) {
-        this.body = {
+        ctx.body = {
             success: false,
             err: '用户没登陆'
         }
@@ -67,8 +66,8 @@ exports.hasToken = function*(next) {
         return next
     }
 
-    this.session = this.session || {}
-    this.session.user = user
+    ctx.session = this.session || {}
+    ctx.session.user = user
 
-    yield next
+    await next()
 }

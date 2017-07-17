@@ -7,13 +7,11 @@ var uuid = require('uuid')
 var sms = require('../service/sms')
 
 exports.signup = async(ctx, next) => {
-    let phoneNumber = xss(ctx.query.phoneNumber.trim())
-
-    // let phoneNumber = xss(ctx.request.body.phoneNumber.trim())
+    let phoneNumber = xss(ctx.request.body.phoneNumber.trim())
 
     let user = await User.findOne({
         phoneNumber: phoneNumber
-    }).exec()
+    })
 
     let verifyCode = sms.getCode()
 
@@ -59,12 +57,11 @@ exports.signup = async(ctx, next) => {
     }
 }
 
-exports.verify = function*(next) {
-    let verifyCode = this.request.body.verifyCode
-    var phoneNumber = this.request.body.phoneNumber
-
+exports.verify = async(ctx, next) => {
+    let verifyCode = ctx.request.body.verifyCode
+    var phoneNumber = ctx.request.body.phoneNumber
     if (!verifyCode || !phoneNumber) {
-        this.body = {
+        ctx.body = {
             success: false,
             err: '验证没通过'
         }
@@ -72,16 +69,16 @@ exports.verify = function*(next) {
         return next
     }
 
-    var user = yield User.findOne({
+    var user = await User.findOne({
         phoneNumber: phoneNumber,
         verifyCode: verifyCode
-    }).exec()
-
+    })
+    console.log(user)
     if (user) {
         user.verified = true
-        user = yield user.save()
+        user = await user.save()
 
-        this.body = {
+        ctx.body = {
             success: true,
             data: {
                 nickname: user.nickname,
@@ -94,16 +91,17 @@ exports.verify = function*(next) {
             }
         }
     } else {
-        this.body = {
+        ctx.body = {
             success: false,
             err: '验证未通过'
         }
     }
 }
 
-exports.update = function*(next) {
-    var body = this.request.body
-    var user = this.session.user
+exports.update = async(ctx, next) => {
+    var body = ctx.request.body
+    var user = ctx.session.user
+    console.log(body)
     var fields = 'avatar,gender,age,nickname,breed'.split(',')
 
     fields.forEach(function(field) {
@@ -112,9 +110,9 @@ exports.update = function*(next) {
         }
     })
 
-    user = yield user.save()
+    user = await user.save()
 
-    this.body = {
+    ctx.body = {
         success: true,
         data: {
             nickname: user.nickname,
