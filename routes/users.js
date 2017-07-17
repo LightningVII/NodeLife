@@ -1,8 +1,17 @@
 const Promise = require("bluebird")
 const request = Promise.promisify(require('request'))
 var router = require('koa-router')();
+var app = require('../controller/app')
+var user = require('../controller/user');
 
 // router.prefix('/ws-truck-app/app');
+
+
+router.get('/signup', user.signup)
+router.post('/signup', app.hasBody, user.signup)
+router.post('/verify', app.hasBody, user.verify)
+router.post('/update', app.hasBody, app.hasToken, user.update)
+
 
 router.get('/', function(ctx, next) {
     console.log('this is a users response!')
@@ -10,19 +19,14 @@ router.get('/', function(ctx, next) {
 });
 
 router.get('/bar', async(ctx, next) => {
-    var json = {}
-        // ctx.status = 200
+    let json = {}
     await request({
         method: 'GET',
         url: 'http://api.douban.com/v2/movie/top250',
-        // url: 'http://v5.pc.duomi.com/search-ajaxsearch-searchall?kw=小提琴&pi=1&pz=20',
         json: true
     }).then(response => {
         json = response.body
     })
-
-    // ctx.response = JSON.stringify(json)
-    // ctx.response = json
     ctx.body = JSON.stringify(json);
 });
 

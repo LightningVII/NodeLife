@@ -3,7 +3,8 @@ const path = require('path')
 const mongoose = require('mongoose')
 const db = 'mongodb://localhost/imooc-app'
 
-mongoose.Promise = require('bluebird')
+mongoose.Promise = global.Promise;
+// mongoose.Promise = require('bluebird')
 mongoose.connect(db, {
     useMongoClient: true,
 });
@@ -56,9 +57,9 @@ onerror(app);
 app.use(async(ctx, next) => {
     const start = new Date();
     const ms = new Date() - start;
-    console.log("----------params:" + JSON.stringify(ctx.params))
-    console.log("----------query:" + JSON.stringify(ctx.query))
-    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
+    // console.log("----------params:" + JSON.stringify(ctx.params))
+    // console.log("----------query:" + JSON.stringify(ctx.query))
+    // console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
     ctx.body = {
         success: true
     }
