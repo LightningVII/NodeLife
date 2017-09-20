@@ -1,13 +1,13 @@
 const fs = require('fs')
 const path = require('path')
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 const db = 'mongodb://localhost/imooc-app'
 
-mongoose.Promise = global.Promise;
+// mongoose.Promise = global.Promise;
 // mongoose.Promise = require('bluebird')
-mongoose.connect(db, {
-    useMongoClient: true,
-});
+// mongoose.connect(db, {
+//     useMongoClient: true,
+// });
 
 const models_path = path.join(__dirname, '/models')
 const walk = modelPath => {
@@ -61,7 +61,7 @@ app.use(async(ctx, next) => {
     console.log("----------query:" + JSON.stringify(ctx.query))
     console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
     ctx.body = {
-        success: true
+        success: false
     }
     await next();
 });

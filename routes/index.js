@@ -10,6 +10,7 @@ const order = require('./order');
 const home = require('./home');
 const city = require('./city');
 const user = require('./users');
+const jdapi = require('./jdapi');
 
 router.use('/detail', detail.routes(), detail.allowedMethods());
 router.use('/foo', foo.routes(), foo.allowedMethods());
@@ -18,10 +19,7 @@ router.use('/order', order.routes(), order.allowedMethods());
 router.use('/home', home.routes(), home.allowedMethods());
 router.use('/city', city.routes(), city.allowedMethods());
 router.use('/user', user.routes(), user.allowedMethods());
-
-
-
-
+router.use('/jd', jdapi.routes(), user.allowedMethods());
 
 
 // app

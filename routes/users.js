@@ -4,9 +4,6 @@ var router = require('koa-router')();
 var app = require('../controller/app')
 var user = require('../controller/user');
 
-// router.prefix('/ws-truck-app/app');
-
-
 router.post('/signup', app.hasBody, user.signup)
 router.post('/verify', app.hasBody, user.verify)
 router.post('/update', app.hasBody, app.hasToken, user.update)
@@ -28,5 +25,4 @@ router.get('/bar', async(ctx, next) => {
     })
     ctx.body = JSON.stringify(json);
 });
-
 module.exports = router;
