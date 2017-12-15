@@ -1,13 +1,13 @@
 const fs = require('fs')
 const path = require('path')
-// const mongoose = require('mongoose')
-const db = 'mongodb://localhost/imooc-app'
+const mongoose = require('mongoose')
+const db = 'mongodb://localhost/my-imooc'
 
-// mongoose.Promise = global.Promise;
-// mongoose.Promise = require('bluebird')
-// mongoose.connect(db, {
-//     useMongoClient: true,
-// });
+mongoose.Promise = global.Promise;
+mongoose.Promise = require('bluebird')
+mongoose.connect(db, {
+    useMongoClient: true,
+});
 
 const models_path = path.join(__dirname, '/models')
 const walk = modelPath => {

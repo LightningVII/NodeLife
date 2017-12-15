@@ -1,5 +1,6 @@
-var Mock = require('../mockjs');
-var router = require('koa-router')({
+'use strict';
+const Mock = require('../mockjs');
+const router = require('koa-router')({
     prefix: '/api'
 });
 
@@ -11,6 +12,9 @@ const home = require('./home');
 const city = require('./city');
 const user = require('./users');
 const jdapi = require('./jdapi');
+const creations = require('./creations');
+const comment = require('./comment');
+const app = require('../controller/app');
 
 router.use('/detail', detail.routes(), detail.allowedMethods());
 router.use('/foo', foo.routes(), foo.allowedMethods());
@@ -20,11 +24,13 @@ router.use('/home', home.routes(), home.allowedMethods());
 router.use('/city', city.routes(), city.allowedMethods());
 router.use('/user', user.routes(), user.allowedMethods());
 router.use('/jd', jdapi.routes(), user.allowedMethods());
+router.use('/creations', creations.routes(), creations.allowedMethods());
+router.use('/comment', comment.routes(), comment.allowedMethods());
 
+// app.hasBody, app.hasToken, 
+router.post('/signature', app.signature);
 
 // app
-//   router.post('/signature', App.hasBody, App.hasToken, App.signature)
-
 // creations
 //   router.get('/creations', Creation.find)
 //   router.post('/creations', App.hasBody, App.hasToken, Creation.save)
@@ -37,6 +43,5 @@ router.use('/jd', jdapi.routes(), user.allowedMethods());
 
 // votes
 //   router.post('/up', App.hasBody, App.hasToken, Creation.up)
-
 
 module.exports = router;

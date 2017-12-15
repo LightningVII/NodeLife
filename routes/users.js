@@ -1,7 +1,7 @@
 const Promise = require("bluebird")
 const request = Promise.promisify(require('request'))
 var router = require('koa-router')();
-var app = require('../controller/app')
+var app = require('../controller/app');
 var user = require('../controller/user');
 
 router.post('/signup', app.hasBody, user.signup)
