@@ -1,44 +1,39 @@
 'use strict';
 
-var qiniu = require('qiniu');
-var cloudinary = require('cloudinary');
-var Promise = require('bluebird');
-var sha1 = require('sha1');
-var uuid = require('uuid');
-var config = require('../config/config');
-
-qiniu.conf.ACCESS_KEY = config.qiniu.AK;
-qiniu.conf.SECRET_KEY = config.qiniu.SK;
+const qiniu = require('qiniu');
+const cloudinary = require('cloudinary');
+const Promise = require('bluebird');
+const sha1 = require('sha1');
+const uuid = require('uuid');
+const config = require('../config/config');
 
 cloudinary.config(config.cloudinary);
 
 exports.getQiniuToken = body => {
-    var mac = new qiniu.auth.digest.Mac(config.qiniu.AK, config.qiniu.SK);
+    const { qiniu: { BUCKET, AK, SK } } = config;
+    const mac = new qiniu.auth.digest.Mac(AK, SK);
+    const type = body.type;
+    let key = uuid.v4();
 
-    var type = body.type;
-    var key = uuid.v4();
-    var putPolicy;
-    var options = {
-        persistentNotifyUrl: config.notify
-    };
+    const scope = key => `${BUCKET}:${key}`;
+
     if (type === 'avatar') {
         key += '.jpeg';
-        options.scope = 'gougouvideo:' + key;
-		putPolicy = new qiniu.rs.PutPolicy(options);
     } else if (type === 'video') {
         key += '.mp4';
-        options.scope = 'gougouvideo:' + key;
-        options.persistentOps = 'avthumb/mp4/an/1';
-        putPolicy = new qiniu.rs.PutPolicy2(options);
+        // options.persistentOps = 'avthumb/mp4/an/1';
     } else if (type === 'audio') {
         key += '.aac';
-        options.scope = 'gougouvideo:' + key;
-        options.persistentOps = 'avthumb/acodec/aac';
-        putPolicy = new qiniu.rs.PutPolicy2(options);
+        // options.persistentOps = 'avthumb/acodec/aac';
     }
+    const options = {
+        scope: scope(key)
+    };
 
-	var token = putPolicy.uploadToken(mac);
-	
+    const putPolicy = new qiniu.rs.PutPolicy(options);
+
+    const token = putPolicy.uploadToken(mac);
+
     return {
         key,
         token
@@ -46,10 +41,11 @@ exports.getQiniuToken = body => {
 };
 
 exports.saveToQiniu = function(url, key) {
-    var client = new qiniu.rs.Client();
+    const client = new qiniu.rs.Client();
+    const BUCKET = config.qiniu.BUCKET;
 
     return new Promise(function(resolve, reject) {
-        client.fetch(url, 'gougouvideo', key, function(err, ret) {
+        client.fetch(url, BUCKET, key, function(err, ret) {
             if (!err) {
                 resolve(ret);
             } else {
@@ -79,10 +75,9 @@ exports.uploadToCloudinary = function(url) {
 };
 
 exports.getCloudinaryToken = function(body) {
-    var type = body.type;
-    var timestamp = body.timestamp;
-    var folder;
-    var tags;
+    const type = body.type;
+    const timestamp = body.timestamp;
+    let folder, tags;
 
     if (type === 'avatar') {
         folder = 'avatar';
@@ -96,7 +91,7 @@ exports.getCloudinaryToken = function(body) {
     }
 
     // data.data
-    var signature =
+    const signature =
         'folder=' +
         folder +
         '&tags=' +
@@ -104,7 +99,7 @@ exports.getCloudinaryToken = function(body) {
         '&timestamp=' +
         timestamp +
         config.cloudinary.api_secret;
-    var key = uuid.v4();
+    const key = uuid.v4();
 
     signature = sha1(signature);
 

@@ -1,10 +1,10 @@
 'use strict';
 
-var xss = require('xss');
-var mongoose = require('mongoose');
-var User = mongoose.model('User');
-var uuid = require('uuid');
-var sms = require('../service/sms');
+const xss = require('xss');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
+const uuid = require('uuid');
+const sms = require('../service/sms');
 
 exports.signup = async (ctx, next) => {
     let phoneNumber = xss(ctx.request.body.phoneNumber.trim());
@@ -100,10 +100,9 @@ exports.verify = async (ctx, next) => {
 };
 
 exports.update = async (ctx, next) => {
-    var body = ctx.request.body;
-    var user = ctx.session.user;
-    console.log(body);
-    var fields = 'avatar,gender,age,nickname,breed'.split(',');
+    const body = ctx.request.body;
+    const user = ctx.session.user;
+    const fields = 'avatar,gender,age,nickname,breed'.split(',');
 
     fields.forEach(function(field) {
         if (body[field]) {
@@ -111,18 +110,8 @@ exports.update = async (ctx, next) => {
         }
     });
 
-    user = await user.save();
-
     ctx.body = {
         success: true,
-        data: {
-            nickname: user.nickname,
-            accessToken: user.accessToken,
-            avatar: user.avatar,
-            age: user.age,
-            breed: user.breed,
-            gender: user.gender,
-            _id: user._id
-        }
+        data: await user.save()
     };
 };

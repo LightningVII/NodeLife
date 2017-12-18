@@ -41,6 +41,7 @@ const static = require('koa-static');
 const Promise = require("bluebird")
 const request = Promise.promisify(require('request'))
 
+app.keys = ['secret', 'key'];
 
 app.use(logger());
 app.use(session(app));
@@ -57,8 +58,10 @@ onerror(app);
 app.use(async(ctx, next) => {
     const start = new Date();
     const ms = new Date() - start;
-    console.log("----------params:" + JSON.stringify(ctx.params))
-    console.log("----------query:" + JSON.stringify(ctx.query))
+    const body = ctx.request && ctx.request.body;
+    console.log("----------body:" + JSON.stringify(body))
+    console.log("----------params:" + (ctx.params ? JSON.stringify(ctx.params): ''))
+    console.log("----------query:" + (Object.getOwnPropertyNames(ctx.query).length ? JSON.stringify(ctx.query): ''))
     console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
     ctx.body = {
         success: false

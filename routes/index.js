@@ -27,8 +27,7 @@ router.use('/jd', jdapi.routes(), user.allowedMethods());
 router.use('/creations', creations.routes(), creations.allowedMethods());
 router.use('/comment', comment.routes(), comment.allowedMethods());
 
-// app.hasBody, app.hasToken, 
-router.post('/signature', app.signature);
+router.post('/signature', app.hasBody, app.hasToken, app.signature);
 
 // app
 // creations

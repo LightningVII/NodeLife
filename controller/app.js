@@ -6,8 +6,6 @@ var User = mongoose.model('User');
 var robot = require('../service/robot');
 
 exports.signature = async (ctx, next) => {
-    console.log('----------signature------------')
-    console.log(ctx.request.body)
     var body = ctx.request.body;
     var cloud = body.cloud;
     var data;
