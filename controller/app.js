@@ -1,15 +1,14 @@
 'use strict';
-
-var mongoose = require('mongoose');
-var uuid = require('uuid');
-var User = mongoose.model('User');
-var robot = require('../service/robot');
+const mongoose = require('mongoose');
+const uuid = require('uuid');
+const User = mongoose.model('User');
+const robot = require('../service/robot');
 
 exports.signature = async (ctx, next) => {
-    var body = ctx.request.body;
-    var cloud = body.cloud;
-    var data;
-    
+    const body = ctx.request.body;
+    const cloud = body.cloud;
+    let data;
+
     if (cloud === 'qiniu') {
         data = robot.getQiniuToken(body);
     } else {
@@ -23,7 +22,7 @@ exports.signature = async (ctx, next) => {
 };
 
 exports.hasBody = async (ctx, next) => {
-    var body = ctx.request.body || {};
+    const body = ctx.request.body || {};
     if (Object.keys(body).length === 0) {
         ctx.body = {
             success: false,
@@ -37,7 +36,7 @@ exports.hasBody = async (ctx, next) => {
 };
 
 exports.hasToken = async (ctx, next) => {
-    var accessToken = ctx.query.accessToken;
+    let accessToken = ctx.query.accessToken;
 
     if (!accessToken) {
         accessToken = ctx.request.body.accessToken;
@@ -52,7 +51,7 @@ exports.hasToken = async (ctx, next) => {
         return next;
     }
 
-    var user = await User.findOne({
+    const user = await User.findOne({
         accessToken: accessToken
     });
 

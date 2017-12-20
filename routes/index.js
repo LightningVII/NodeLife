@@ -1,46 +1,54 @@
 'use strict';
-const Mock = require('../mockjs');
+const Promise = require("bluebird")
+const request = Promise.promisify(require('request'))
 const router = require('koa-router')({
     prefix: '/api'
 });
 
-const detail = require('./detail');
-const foo = require('./foo');
-const ad = require('./ad');
-const order = require('./order');
-const home = require('./home');
-const city = require('./city');
-const user = require('./users');
-const jdapi = require('./jdapi');
-const creations = require('./creations');
-const comment = require('./comment');
 const app = require('../controller/app');
-
-router.use('/detail', detail.routes(), detail.allowedMethods());
-router.use('/foo', foo.routes(), foo.allowedMethods());
-router.use('/ad', ad.routes(), ad.allowedMethods());
-router.use('/order', order.routes(), order.allowedMethods());
-router.use('/home', home.routes(), home.allowedMethods());
-router.use('/city', city.routes(), city.allowedMethods());
-router.use('/user', user.routes(), user.allowedMethods());
-router.use('/jd', jdapi.routes(), user.allowedMethods());
-router.use('/creations', creations.routes(), creations.allowedMethods());
-router.use('/comment', comment.routes(), comment.allowedMethods());
-
 router.post('/signature', app.hasBody, app.hasToken, app.signature);
 
-// app
-// creations
-//   router.get('/creations', Creation.find)
-//   router.post('/creations', App.hasBody, App.hasToken, Creation.save)
-//   router.post('/creations/video', App.hasBody, App.hasToken, Creation.video)
-//   router.post('/creations/audio', App.hasBody, App.hasToken, Creation.audio)
+const detail = require('./detail');
+router.use('/detail', detail.routes(), detail.allowedMethods());
 
-// comments
-//   router.get('/comments', /*App.hasToken,*/ Comment.find)
-//   router.post('/comments', App.hasBody, App.hasToken, Comment.save)
+const foo = require('./foo');
+router.use('/foo', foo.routes(), foo.allowedMethods());
 
-// votes
-//   router.post('/up', App.hasBody, App.hasToken, Creation.up)
+const ad = require('./ad');
+router.use('/ad', ad.routes(), ad.allowedMethods());
+
+const order = require('./order');
+router.use('/order', order.routes(), order.allowedMethods());
+
+const home = require('./home');
+router.use('/home', home.routes(), home.allowedMethods());
+
+const city = require('./city');
+router.use('/city', city.routes(), city.allowedMethods());
+
+const user = require('./users');
+router.use('/user', user.routes(), user.allowedMethods());
+
+const jdapi = require('./jdapi');
+router.use('/jd', jdapi.routes(), user.allowedMethods());
+
+const creations = require('./creations');
+router.use('/creations', creations.routes(), creations.allowedMethods());
+
+const comment = require('./comment');
+router.use('/comment', comment.routes(), comment.allowedMethods());
+
+/* 豆瓣 api */
+router.get('/douban', async(ctx, next) => {
+    let json = {}
+    await request({
+        method: 'GET',
+        url: 'http://api.douban.com/v2/movie/top250',
+        json: true
+    }).then(response => {
+        json = response.body
+    })
+    ctx.body = JSON.stringify(json);
+});
 
 module.exports = router;

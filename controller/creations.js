@@ -11,7 +11,7 @@ const robot = require('../service/robot');
 const config = require('../config/config');
 const userFields = ['avatar', 'nickname', 'gender', 'age', 'breed'];
 
-exports.up = async(ctx, next) => {
+exports.up = async (ctx, next) => {
     const body = ctx.request.body;
     const user = ctx.session.user;
     const creation = await Creation.findOne({
@@ -42,7 +42,7 @@ exports.up = async(ctx, next) => {
     };
 };
 
-exports.find = async(ctx, next) => {
+exports.find = async (ctx, next) => {
     const feed = ctx.query.feed;
     const cid = ctx.query.cid;
     const count = 5;
@@ -58,23 +58,20 @@ exports.find = async(ctx, next) => {
         }
     }
 
-    const queryArray = [
-        Creation.find(query)
-            .sort({
-                'meta.createAt': -1
-            })
-            .limit(count)
-            .populate('author', userFields.join(' '))
-            .exec(),
-        Creation.count({ finish: 100 }).exec()
-    ];
+    const data = await Creation.find(query)
+        .sort({
+            'meta.createAt': -1
+        })
+        .limit(count)
+        .populate('author', userFields.join(' '))
+        .exec();
 
-    const data = await queryArray;
+    const total = await Creation.count({ finish: 100 }).exec();
 
     ctx.body = {
         success: true,
-        data: data[0],
-        total: data[1]
+        data,
+        total
     };
 };
 
@@ -185,28 +182,32 @@ function asyncMedia(videoId, audioId) {
     });
 }
 
-exports.audio = async(ctx, next) => {
+exports.audio = async (ctx, next) => {
+    console.log('=======+++++++++=========');
     const body = ctx.request.body;
+    console.log(body.audio);
     const audioData = body.audio;
     const videoId = body.videoId;
     const user = ctx.session.user;
 
-    if (!audioData || !audioData.public_id) {
-        ctx.body = {
-            success: false,
-            err: '音频没有上传成功！'
-        };
+    // if (!audioData || !audioData.public_id) {
+    //     ctx.body = {
+    //         success: false,
+    //         err: '音频没有上传成功！'
+    //     };
 
-        return next;
-    }
+    //     return next;
+    // }
 
-    const audio = await Audio.findOne({
+    let audio = await Audio.findOne({
         public_id: audioData.public_id
     }).exec();
 
     const video = await Video.findOne({
         _id: videoId
     }).exec();
+
+    console.log(video);
 
     if (!audio) {
         const _audio = {
@@ -232,7 +233,7 @@ exports.audio = async(ctx, next) => {
     };
 };
 
-exports.video = async(ctx, next) => {
+exports.video = async (ctx, next) => {
     const body = ctx.request.body;
     const videoData = body.video;
     const user = ctx.session.user;
@@ -246,7 +247,7 @@ exports.video = async(ctx, next) => {
         return next;
     }
 
-    const video = await Video.findOne({
+    let video = await Video.findOne({
         qiniu_key: videoData.key
     }).exec();
 
@@ -279,7 +280,7 @@ exports.video = async(ctx, next) => {
     };
 };
 
-exports.save = async(ctx, next) => {
+exports.save = async (ctx, next) => {
     const body = ctx.request.body;
     const videoId = body.videoId;
     const audioId = body.audioId;
