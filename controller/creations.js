@@ -58,16 +58,18 @@ exports.find = async (ctx, next) => {
         }
     }
 
-    const data = await Creation.find(query)
+    const data = await Creation.find()
         .sort({
             'meta.createAt': -1
         })
         .limit(count)
+        .populate('video', 'qiniu_key')
         .populate('author', userFields.join(' '))
+        .populate('audio', 'detail')
         .exec();
 
-    const total = await Creation.count({ finish: 100 }).exec();
-
+    const total = await Creation.count().exec();
+    console.log('---', total);
     ctx.body = {
         success: true,
         data,
@@ -75,11 +77,11 @@ exports.find = async (ctx, next) => {
     };
 };
 
-function asyncMedia(videoId, audioId) {
+async function asyncMedia(videoId, audioId) {
     if (!videoId) return;
 
-    console.log(videoId);
-    console.log(audioId);
+    console.log('videoId', videoId);
+    console.log('audioId', audioId);
     const query = {
         _id: audioId
     };
@@ -90,96 +92,96 @@ function asyncMedia(videoId, audioId) {
         };
     }
 
-    Promise.all([
-        Video.findOne({ _id: videoId }).exec(),
-        Audio.findOne(query).exec()
-    ]).then(function(data) {
-        console.log(data);
-        const video = data[0];
-        const audio = data[1];
+    const video = await Video.findOne({ _id: videoId }).exec();
+    const audio = await Audio.findOne(query).exec();
 
-        console.log('检查数据有效性');
-        if (!video || !video.public_id || !audio || !audio.public_id) {
-            return;
-        }
+    // Promise.all().then(function(data) {
+    console.log('====video===', video);
+    console.log('====audio===', audio);
+    // return;
+    // const video = data[0];
+    // const audio = data[1];
 
-        console.log('开始同步音频视频');
+    console.log('检查数据有效性');
+    // if (!video || !video.public_id || !audio || !audio.public_id) {
+    //     return;
+    // }
 
-        const video_public_id = video.public_id;
-        const audio_public_id = audio.public_id.replace(/\//g, ':');
-        const videoName = video_public_id.replace(/\//g, '_') + '.mp4';
-        const videoURL =
-            'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' +
-            audio_public_id +
-            '/' +
-            video_public_id +
-            '.mp4';
-        const thumbName = video_public_id.replace(/\//g, '_') + '.jpg';
-        const thumbURL =
-            'http://res.cloudinary.com/gougou/video/upload/' +
-            video_public_id +
-            '.jpg';
+    console.log('开始同步音频视频');
 
-        console.log('同步视频到七牛');
+    const video_public_id = video.public_id;
+    // const audio_public_id = audio.public_id.replace(/\//g, ':');
+    const videoName = video_public_id.replace(/\//g, '_') + '.mp4';
+    const videoURL =
+        'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' +
+        audio_public_id +
+        '/' +
+        video_public_id +
+        '.mp4';
+    const thumbName = video_public_id.replace(/\//g, '_') + '.jpg';
+    const thumbURL =
+        'http://res.cloudinary.com/gougou/video/upload/' +
+        video_public_id +
+        '.jpg';
 
-        robot
-            .saveToQiniu(videoURL, videoName)
-            .catch(function(err) {
-                console.log(err);
-            })
-            .then(function(response) {
-                if (response && response.key) {
-                    audio.qiniu_video = response.key;
-                    audio.save().then(function(_audio) {
-                        Creation.findOne({
-                            video: video._id,
-                            audio: audio._id
-                        })
-                            .exec()
-                            .then(function(_creation) {
-                                if (_creation) {
-                                    if (!_creation.qiniu_video) {
-                                        _creation.qiniu_video =
-                                            _audio.qiniu_video;
-                                        _creation.save();
-                                    }
+    console.log('同步视频到七牛');
+
+    robot
+        .saveToQiniu(videoURL, videoName)
+        .catch(function(err) {
+            console.log(err);
+        })
+        .then(function(response) {
+            if (response && response.key) {
+                audio.qiniu_video = response.key;
+                audio.save().then(function(_audio) {
+                    Creation.findOne({
+                        video: video._id,
+                        audio: audio._id
+                    })
+                        .exec()
+                        .then(function(_creation) {
+                            if (_creation) {
+                                if (!_creation.qiniu_video) {
+                                    _creation.qiniu_video = _audio.qiniu_video;
+                                    _creation.save();
                                 }
-                            });
-                        console.log(_audio);
-                        console.log('同步视频成功');
-                    });
-                }
-            });
+                            }
+                        });
+                    console.log(_audio);
+                    console.log('同步视频成功');
+                });
+            }
+        });
 
-        robot
-            .saveToQiniu(thumbURL, thumbName)
-            .catch(function(err) {
-                console.log(err);
-            })
-            .then(function(response) {
-                if (response && response.key) {
-                    audio.qiniu_thumb = response.key;
-                    audio.save().then(function(_audio) {
-                        Creation.findOne({
-                            video: video._id,
-                            audio: audio._id
-                        })
-                            .exec()
-                            .then(function(_creation) {
-                                if (_creation) {
-                                    if (!_creation.qiniu_video) {
-                                        _creation.qiniu_thumb =
-                                            _audio.qiniu_thumb;
-                                        _creation.save();
-                                    }
+    robot
+        .saveToQiniu(thumbURL, thumbName)
+        .catch(function(err) {
+            console.log(err);
+        })
+        .then(function(response) {
+            if (response && response.key) {
+                audio.qiniu_thumb = response.key;
+                audio.save().then(function(_audio) {
+                    Creation.findOne({
+                        video: video._id,
+                        audio: audio._id
+                    })
+                        .exec()
+                        .then(function(_creation) {
+                            if (_creation) {
+                                if (!_creation.qiniu_video) {
+                                    _creation.qiniu_thumb = _audio.qiniu_thumb;
+                                    _creation.save();
                                 }
-                            });
-                        console.log(_audio);
-                        console.log('同步封面成功');
-                    });
-                }
-            });
-    });
+                            }
+                        });
+                    console.log(_audio);
+                    console.log('同步封面成功');
+                });
+            }
+        });
+    // });
 }
 
 exports.audio = async (ctx, next) => {
@@ -230,6 +232,17 @@ exports.audio = async (ctx, next) => {
     ctx.body = {
         success: true,
         data: audio._id
+    };
+};
+
+exports.test = async (ctx, next) => {
+    const audioId = '5a3cbdfec78ef4059545b2f7';
+    const videoId = '5a3cb1c0c78ef4059545b2f6';
+    asyncMedia(videoId, audioId);
+
+    ctx.body = {
+        success: true,
+        data: audioId
     };
 };
 
@@ -285,7 +298,7 @@ exports.save = async (ctx, next) => {
     const videoId = body.videoId;
     const audioId = body.audioId;
     const title = body.title;
-    // const user = body.session.user;
+    const user = ctx.session.user;
 
     const video = await Video.findOne({
         _id: videoId
@@ -303,7 +316,7 @@ exports.save = async (ctx, next) => {
         return next;
     }
 
-    const creation = await Creation.findOne({
+    let creation = await Creation.findOne({
         audio: audioId,
         video: videoId
     }).exec();
