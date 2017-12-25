@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const qiniu = require('qiniu');
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
 const Video = mongoose.model('Video');
@@ -8,7 +9,7 @@ const Audio = mongoose.model('Audio');
 const Creation = mongoose.model('Creation');
 const xss = require('xss');
 const robot = require('../service/robot');
-const config = require('../config/config');
+const conf = require('../config/config');
 const userFields = ['avatar', 'nickname', 'gender', 'age', 'breed'];
 
 exports.up = async (ctx, next) => {
@@ -79,9 +80,6 @@ exports.find = async (ctx, next) => {
 
 async function asyncMedia(videoId, audioId) {
     if (!videoId) return;
-
-    console.log('videoId', videoId);
-    console.log('audioId', audioId);
     const query = {
         _id: audioId
     };
@@ -95,99 +93,96 @@ async function asyncMedia(videoId, audioId) {
     const video = await Video.findOne({ _id: videoId }).exec();
     const audio = await Audio.findOne(query).exec();
 
-    // Promise.all().then(function(data) {
     console.log('====video===', video);
     console.log('====audio===', audio);
-    // return;
-    // const video = data[0];
-    // const audio = data[1];
 
-    console.log('检查数据有效性');
-    // if (!video || !video.public_id || !audio || !audio.public_id) {
-    //     return;
-    // }
+    // const videoURL =
+    //     'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' +
+    //     audio_public_id +
+    //     '/' +
+    //     video_public_id +
+    //     '.mp4';
 
-    console.log('开始同步音频视频');
+    // robot
+    //     .saveToQiniu(videoURL, videoName)
+    //     .catch(function(err) {
+    //         console.log(err);
+    //     })
+    //     .then(function(response) {
+    //         if (response && response.key) {
+    //             audio.qiniu_video = response.key;
+    //             audio.save().then(function(_audio) {
+    //                 Creation.findOne({
+    //                     video: video._id,
+    //                     audio: audio._id
+    //                 })
+    //                     .exec()
+    //                     .then(function(_creation) {
+    //                         if (_creation) {
+    //                             if (!_creation.qiniu_video) {
+    //                                 _creation.qiniu_video = _audio.qiniu_video;
+    //                                 _creation.save();
+    //                             }
+    //                         }
+    //                     });
+    //                 console.log(_audio);
+    //                 console.log('同步视频成功');
+    //             });
+    //         }
+    //     });
 
-    const video_public_id = video.public_id;
-    // const audio_public_id = audio.public_id.replace(/\//g, ':');
-    const videoName = video_public_id.replace(/\//g, '_') + '.mp4';
-    const videoURL =
-        'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' +
-        audio_public_id +
-        '/' +
-        video_public_id +
-        '.mp4';
-    const thumbName = video_public_id.replace(/\//g, '_') + '.jpg';
-    const thumbURL =
-        'http://res.cloudinary.com/gougou/video/upload/' +
-        video_public_id +
-        '.jpg';
+    const { qiniu: { BUCKET, AK, SK } } = conf;
 
-    console.log('同步视频到七牛');
+    const mac = new qiniu.auth.digest.Mac(AK, SK);
+    const config = new qiniu.conf.Config();
+    config.zone = qiniu.zone.Zone_z0;
+    const operManager = new qiniu.fop.OperationManager(mac, config);
+    const saveBucket = BUCKET;
+    const qiniu_key = video.qiniu_key;
+    const thumb = qiniu_key.substr(0, qiniu_key.indexOf('.'));
 
-    robot
-        .saveToQiniu(videoURL, videoName)
-        .catch(function(err) {
-            console.log(err);
-        })
-        .then(function(response) {
-            if (response && response.key) {
-                audio.qiniu_video = response.key;
-                audio.save().then(function(_audio) {
-                    Creation.findOne({
-                        video: video._id,
-                        audio: audio._id
-                    })
-                        .exec()
-                        .then(function(_creation) {
-                            if (_creation) {
-                                if (!_creation.qiniu_video) {
-                                    _creation.qiniu_video = _audio.qiniu_video;
-                                    _creation.save();
-                                }
-                            }
-                        });
-                    console.log(_audio);
-                    console.log('同步视频成功');
+    const fops = [
+        'vframe/jpg/offset/1|saveas/' +
+            qiniu.util.urlsafeBase64Encode(
+                saveBucket + ':' + thumb + '-thumb.jpg'
+            )
+    ];
+    const pipeline = 'whiteace';
+    const srcBucket = BUCKET;
+    const srcKey = qiniu_key;
+    const options = {
+        force: true
+    };
+    //持久化数据处理返回的是任务的persistentId，可以根据这个id查询处理状态
+    operManager.pfop(srcBucket, srcKey, fops, pipeline, options, function(
+        err,
+        respBody,
+        respInfo
+    ) {
+        if (err) {
+            throw err;
+        }
+        if (respInfo.statusCode == 200) {
+            Creation.findOne({
+                video: video._id,
+                audio: audio._id
+            })
+                .exec()
+                .then(data => {
+                    if (!data.qiniu_thumb) {
+                        data.qiniu_thumb = thumb + '-thumb.jpg';
+                        data.save();
+                    }
                 });
-            }
-        });
-
-    robot
-        .saveToQiniu(thumbURL, thumbName)
-        .catch(function(err) {
-            console.log(err);
-        })
-        .then(function(response) {
-            if (response && response.key) {
-                audio.qiniu_thumb = response.key;
-                audio.save().then(function(_audio) {
-                    Creation.findOne({
-                        video: video._id,
-                        audio: audio._id
-                    })
-                        .exec()
-                        .then(function(_creation) {
-                            if (_creation) {
-                                if (!_creation.qiniu_video) {
-                                    _creation.qiniu_thumb = _audio.qiniu_thumb;
-                                    _creation.save();
-                                }
-                            }
-                        });
-                    console.log(_audio);
-                    console.log('同步封面成功');
-                });
-            }
-        });
-    // });
+        } else {
+            console.log(respInfo.statusCode);
+            console.log(respBody);
+        }
+    });
 }
 
 exports.audio = async (ctx, next) => {
-    console.log('=======+++++++++=========');
     const body = ctx.request.body;
-    console.log(body.audio);
     const audioData = body.audio;
     const videoId = body.videoId;
     const user = ctx.session.user;

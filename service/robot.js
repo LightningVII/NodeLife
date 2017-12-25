@@ -40,19 +40,11 @@ exports.getQiniuToken = body => {
     };
 };
 
-exports.saveToQiniu = function(url, key) {
+exports.saveToQiniu = async (url, key) => {
     const client = new qiniu.rs.Client();
     const BUCKET = config.qiniu.BUCKET;
-
-    return new Promise(function(resolve, reject) {
-        client.fetch(url, BUCKET, key, function(err, ret) {
-            if (!err) {
-                resolve(ret);
-            } else {
-                reject(err);
-            }
-        });
-    });
+    const data = await client.fetch(url, BUCKET, key);
+    return data;
 };
 
 exports.uploadToCloudinary = function(url) {
