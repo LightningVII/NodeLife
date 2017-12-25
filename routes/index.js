@@ -36,7 +36,7 @@ const creations = require('./creations');
 router.use('/creations', creations.routes(), creations.allowedMethods());
 
 const comment = require('./comment');
-router.use('/comment', comment.routes(), comment.allowedMethods());
+router.use('/comments', comment.routes(), comment.allowedMethods());
 
 /* 豆瓣 api */
 router.get('/douban', async(ctx, next) => {

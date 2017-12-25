@@ -1,128 +1,121 @@
-'use strict'
+'use strict';
+const mongoose = require('mongoose');
+const Comment = mongoose.model('Comment');
+const Creation = mongoose.model('Creation');
 
-var mongoose = require('mongoose')
-var Comment = mongoose.model('Comment')
-var Creation = mongoose.model('Creation')
+const userFields = ['avatar', 'nickname', 'gender', 'age', 'breed'];
 
-var userFields = [
-  'avatar',
-  'nickname',
-  'gender',
-  'age',
-  'breed'
-]
+exports.find = async (ctx, next) => {
+    const { feed, cid, id } = ctx.query;
+    const count = 5;
+    const query = {
+        creation: cid
+    };
 
-exports.find = function *(next) {
-  var feed = this.query.feed
-  var cid = this.query.cid
-  var id = this.query.id
-  var count = 5
-  var query = {
-    creation: cid
-  }
+    if (!cid) {
+        return (ctx.body = {
+            success: false,
+            err: 'id 不能为空'
+        });
+    }
 
-  if (!cid) {
-    return (this.body = {
-      success: false,
-      err: 'id 不能为空'
-    })
-  }
+    if (id) {
+        if (feed === 'recent') {
+            query._id = { $gt: id };
+        } else {
+            query._id = { $lt: id };
+        }
+    }
 
-  if (id) {
-    if (feed === 'recent') {
-      query._id = {'$gt': id}
+    const queryArray = [
+        Comment.find(query)
+            .populate('replyBy', userFields.join(' '))
+            .sort({
+                'meta.createAt': -1
+            })
+            .limit(count)
+            .exec(),
+        Comment.count({ creation: cid }).exec()
+    ];
+
+    const data = await Comment.find(query)
+        .populate('replyBy', userFields.join(' '))
+        .sort({
+            'meta.createAt': -1
+        })
+        .limit(count)
+        .exec();
+
+    const total = await Comment.find(query);
+
+    ctx.body = {
+        success: true,
+        data,
+        total
+    };
+};
+
+exports.save = async (ctx, next) => {
+    const commentData = ctx.request.body.comment;
+    console.log(commentData)
+    const user = ctx.session.user;
+    const creation = await Creation.findOne({
+        _id: commentData.creation
+    }).exec();
+
+    console.log(commentData.creation);
+    console.log(commentData);
+
+    if (!creation) {
+        ctx.body = {
+            success: false,
+            err: '视频不见了'
+        };
+
+        return next;
+    }
+
+    let comment;
+
+    if (commentData.cid) {
+        comment = await Comment.findOne({
+            _id: commentData.cid
+        }).exec();
+
+        const reply = {
+            from: commentData.from,
+            to: commentData.tid,
+            content: commentData.content
+        };
+
+        comment.reply.push(reply);
+
+        comment = await comment.save();
     } else {
-      query._id = {'$lt': id}
-    }
-  }
+        comment = new Comment({
+            creation: creation._id,
+            replyBy: user._id,
+            replyTo: creation.author,
+            content: commentData.content
+        });
 
-  var queryArray = [
-    Comment
-      .find(query)
-      .populate('replyBy', userFields.join(' '))
-      .sort({
-        'meta.createAt': -1
-      })
-      .limit(count)
-      .exec(),
-    Comment.count({creation: cid}).exec()
-  ]
-
-  var data = yield queryArray
-
-  this.body = {
-    success: true,
-    data: data[0],
-    total: data[1]
-  }
-}
-
-exports.save = function *(next) {
-  var commentData = this.request.body.comment
-  var user = this.session.user
-  var creation = yield Creation.findOne({
-    _id: commentData.creation
-  })
-  .exec()
-
-  console.log(commentData.creation)
-  console.log(commentData)
-
-  if (!creation) {
-    this.body = {
-      success: false,
-      err: '视频不见了'
+        comment = await comment.save();
     }
 
-    return next
-  }
-
-  var comment
-
-  if (commentData.cid) {
-    comment = yield Comment.findOne({
-      _id: commentData.cid
+    const data = await Comment.find({
+        creation: creation._id
     })
-    .exec()
+        .populate('replyBy', userFields.join(' '))
+        .sort({
+            'meta.createAt': -1
+        })
+        .exec();
 
-    var reply = {
-      from: commentData.from,
-      to: commentData.tid,
-      content: commentData.content
-    }
+    const total = await Comment.count({ creation: creation._id }).exec();
 
-    comment.reply.push(reply)
-
-    comment = yield comment.save()
-  } else {
-    comment = new Comment({
-      creation: creation._id,
-      replyBy: user._id,
-      replyTo: creation.author,
-      content: commentData.content
-    })
-
-    comment = yield comment.save()
-  }
-
-  var queryArray = [
-    Comment.find({
-      creation: creation._id
-    })
-    .populate('replyBy', userFields.join(' '))
-    .sort({
-      'meta.createAt': -1
-    })
-    .exec(),
-    Comment.count({creation: creation._id}).exec()
-  ]
-
-  var data = yield queryArray
-
-  this.body = {
-    success: true,
-    data: data[0],
-    total: data[1]
-  }
-}
-
+    ctx.body = {
+        success: true,
+        data,
+        total
+    };
+};
