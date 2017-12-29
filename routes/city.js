@@ -1,5 +1,5 @@
-var router = require('koa-router')();
-var city = require('../controller/city');
+var router = require('koa-router')()
+var city = require('../controller/city')
 router.get('/', city.list)
 
-module.exports = router;
+module.exports = router

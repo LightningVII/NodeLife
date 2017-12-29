@@ -1,71 +1,70 @@
-'use strict';
-const mongoose = require('mongoose');
-const uuid = require('uuid');
-const User = mongoose.model('User');
-const robot = require('../service/robot');
+'use strict'
+const mongoose = require('mongoose')
+const User = mongoose.model('User')
+const robot = require('../service/robot')
 
 exports.signature = async (ctx, next) => {
-    const body = ctx.request.body;
-    const cloud = body.cloud;
-    let data;
+  const body = ctx.request.body
+  const cloud = body.cloud
+  let data
 
-    if (cloud === 'qiniu') {
-        data = robot.getQiniuToken(body);
-    } else {
-        data = robot.getCloudinaryToken(body);
-    }
+  if (cloud === 'qiniu') {
+    data = robot.getQiniuToken(body)
+  } else {
+    data = robot.getCloudinaryToken(body)
+  }
 
-    ctx.body = {
-        success: true,
-        data: data
-    };
-};
+  ctx.body = {
+    success: true,
+    data: data
+  }
+}
 
 exports.hasBody = async (ctx, next) => {
-    const body = ctx.request.body || {};
-    if (Object.keys(body).length === 0) {
-        ctx.body = {
-            success: false,
-            err: '是不是漏掉什么了'
-        };
-
-        return next;
+  const body = ctx.request.body || {}
+  if (Object.keys(body).length === 0) {
+    ctx.body = {
+      success: false,
+      err: '是不是漏掉什么了'
     }
 
-    await next();
-};
+    return next
+  }
+
+  await next()
+}
 
 exports.hasToken = async (ctx, next) => {
-    let accessToken = ctx.query.accessToken;
+  let accessToken = ctx.query.accessToken
 
-    if (!accessToken) {
-        accessToken = ctx.request.body.accessToken;
+  if (!accessToken) {
+    accessToken = ctx.request.body.accessToken
+  }
+
+  if (!accessToken) {
+    ctx.body = {
+      success: false,
+      err: '钥匙丢了'
     }
 
-    if (!accessToken) {
-        ctx.body = {
-            success: false,
-            err: '钥匙丢了'
-        };
+    return next
+  }
 
-        return next;
+  const user = await User.findOne({
+    accessToken: accessToken
+  })
+
+  if (!user) {
+    ctx.body = {
+      success: false,
+      err: '用户没登陆'
     }
 
-    const user = await User.findOne({
-        accessToken: accessToken
-    });
+    return next
+  }
 
-    if (!user) {
-        ctx.body = {
-            success: false,
-            err: '用户没登陆'
-        };
+  ctx.session = this.session || {}
+  ctx.session.user = user
 
-        return next;
-    }
-
-    ctx.session = this.session || {};
-    ctx.session.user = user;
-
-    await next();
-};
+  await next()
+}

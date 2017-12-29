@@ -1,1 +1,1 @@
-console.log(env)
+console.log(global.env)

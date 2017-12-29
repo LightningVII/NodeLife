@@ -3,7 +3,6 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 var ObjectId = Schema.Types.ObjectId
-var Mixed = Schema.Types.Mixed
 
 var CreationSchema = new Schema({
   author: {
@@ -22,7 +21,6 @@ var CreationSchema = new Schema({
   },
 
   title: String,
-
 
   qiniu_thumb: String,
   qiniu_video: String,
@@ -53,11 +51,10 @@ var CreationSchema = new Schema({
   }
 })
 
-CreationSchema.pre('save', function(next) {
+CreationSchema.pre('save', function (next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updateAt = Date.now()
-  }
-  else {
+  } else {
     this.meta.updateAt = Date.now()
   }
 

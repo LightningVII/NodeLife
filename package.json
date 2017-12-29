@@ -5,7 +5,8 @@
     "scripts": {
         "start": "nodemon bin/www",
         "pm2": "pm2 start bin/www ",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "standard": "standard --fix"
     },
     "dependencies": {
         "bluebird": "^3.5.0",
@@ -37,6 +38,18 @@
         "xss": "^0.3.3"
     },
     "devDependencies": {
-        "nodemon": "^1.8.1"
+        "nodemon": "^1.8.1",
+        "pre-commit": "^1.2.2"
+    },
+    "pre-commit": [
+        "standard"
+    ],
+    "precommit.silent": true,
+    "standard": {
+        "ignore": [],
+        "parser": "babel-eslint",
+        "globals": [
+            "fetch"
+        ]
     }
 }
