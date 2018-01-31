@@ -41,9 +41,6 @@
         "nodemon": "^1.8.1",
         "pre-commit": "^1.2.2"
     },
-    "pre-commit": [
-        "standard"
-    ],
     "precommit.silent": true,
     "standard": {
         "ignore": [],
