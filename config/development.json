@@ -1,0 +1,11 @@
+{
+  "db": "mongodb://localhost/trailer",
+  "port": 3333,
+  "base": "http://localhost:3333",
+  "qiniu": {
+    "bucket": "trailer",
+    "video": "http://video.iblack7.com/",
+    "AK": "3kpt23kEYXzoxodBU2Lb0TIp4wlAqrEmC1t_LrvT",
+    "SK": "qA7h6spIUhHKK785vgJmmpaMbwtyy5DkV1PHCKP_"
+  }
+}
