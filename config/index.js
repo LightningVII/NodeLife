@@ -1,9 +1,9 @@
 'use strict'
-/* const { resolve } = require('path')
+/* const { resolve } = require("path");
 
-const host = process.env.HOST || 'localhost'
-const env = process.env.NODE_ENV || 'development'
-const conf = require(resolve(__dirname, `./${env}.json`)) */
+const host = process.env.HOST || "localhost";
+const env = process.env.NODE_ENV || "development";
+const conf = require(resolve(__dirname, `./${env}.json`)); */
 
 /* module.exports = Object.assign({
   env,
@@ -11,6 +11,9 @@ const conf = require(resolve(__dirname, `./${env}.json`)) */
 }, conf) */
 
 module.exports = {
+  db: 'mongodb://localhost/ace-dbs',
+  port: 3333,
+  base: 'http://localhost:3333',
   qiniu: {
     video: 'http://video.iblack7.com/',
     AK: '3kpt23kEYXzoxodBU2Lb0TIp4wlAqrEmC1t_LrvT',

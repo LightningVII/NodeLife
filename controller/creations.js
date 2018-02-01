@@ -8,7 +8,7 @@ const Audio = mongoose.model('Audio')
 const Creation = mongoose.model('Creation')
 const xss = require('xss')
 const robot = require('../service/robot')
-const conf = require('../config/config')
+const conf = require('../config')
 const userFields = ['avatar', 'nickname', 'gender', 'age', 'breed']
 
 exports.up = async (ctx, next) => {
@@ -59,14 +59,14 @@ exports.find = async (ctx, next) => {
   }
 
   const data = await Creation.find()
-        .sort({
-          'meta.createAt': -1
-        })
-        .limit(count)
-        .populate('video', 'qiniu_key')
-        .populate('author', userFields.join(' '))
-        .populate('audio', 'detail')
-        .exec()
+    .sort({
+      'meta.createAt': -1
+    })
+    .limit(count)
+    .populate('video', 'qiniu_key')
+    .populate('author', userFields.join(' '))
+    .populate('audio', 'detail')
+    .exec()
 
   const total = await Creation.count().exec()
   console.log('---', total)
@@ -95,40 +95,40 @@ async function asyncMedia (videoId, audioId) {
   console.log('====video===', video)
   console.log('====audio===', audio)
 
-    // const videoURL =
-    //     'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' +
-    //     audioPublicId +
-    //     '/' +
-    //     videoPublicId +
-    //     '.mp4';
+  // const videoURL =
+  //     'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' +
+  //     audioPublicId +
+  //     '/' +
+  //     videoPublicId +
+  //     '.mp4';
 
-    // robot
-    //     .saveToQiniu(videoURL, videoName)
-    //     .catch(function(err) {
-    //         console.log(err);
-    //     })
-    //     .then(function(response) {
-    //         if (response && response.key) {
-    //             audio.qiniu_video = response.key;
-    //             audio.save().then(function(_audio) {
-    //                 Creation.findOne({
-    //                     video: video._id,
-    //                     audio: audio._id
-    //                 })
-    //                     .exec()
-    //                     .then(function(_creation) {
-    //                         if (_creation) {
-    //                             if (!_creation.qiniu_video) {
-    //                                 _creation.qiniu_video = _audio.qiniu_video;
-    //                                 _creation.save();
-    //                             }
-    //                         }
-    //                     });
-    //                 console.log(_audio);
-    //                 console.log('同步视频成功');
-    //             });
-    //         }
-    //     });
+  // robot
+  //     .saveToQiniu(videoURL, videoName)
+  //     .catch(function(err) {
+  //         console.log(err);
+  //     })
+  //     .then(function(response) {
+  //         if (response && response.key) {
+  //             audio.qiniu_video = response.key;
+  //             audio.save().then(function(_audio) {
+  //                 Creation.findOne({
+  //                     video: video._id,
+  //                     audio: audio._id
+  //                 })
+  //                     .exec()
+  //                     .then(function(_creation) {
+  //                         if (_creation) {
+  //                             if (!_creation.qiniu_video) {
+  //                                 _creation.qiniu_video = _audio.qiniu_video;
+  //                                 _creation.save();
+  //                             }
+  //                         }
+  //                     });
+  //                 console.log(_audio);
+  //                 console.log('同步视频成功');
+  //             });
+  //         }
+  //     });
 
   const { qiniu: { BUCKET, AK, SK } } = conf
 
@@ -142,9 +142,7 @@ async function asyncMedia (videoId, audioId) {
 
   const fops = [
     'vframe/jpg/offset/1|saveas/' +
-            qiniu.util.urlsafeBase64Encode(
-                saveBucket + ':' + thumb + '-thumb.jpg'
-            )
+      qiniu.util.urlsafeBase64Encode(saveBucket + ':' + thumb + '-thumb.jpg')
   ]
   const pipeline = 'whiteace'
   const srcBucket = BUCKET
@@ -152,12 +150,12 @@ async function asyncMedia (videoId, audioId) {
   const options = {
     force: true
   }
-    // 持久化数据处理返回的是任务的persistentId，可以根据这个id查询处理状态
+  // 持久化数据处理返回的是任务的persistentId，可以根据这个id查询处理状态
   operManager.pfop(srcBucket, srcKey, fops, pipeline, options, function (
-        err,
-        respBody,
-        respInfo
-    ) {
+    err,
+    respBody,
+    respInfo
+  ) {
     if (err) {
       throw err
     }
@@ -166,13 +164,13 @@ async function asyncMedia (videoId, audioId) {
         video: video._id,
         audio: audio._id
       })
-                .exec()
-                .then(data => {
-                  if (!data.qiniu_thumb) {
-                    data.qiniu_thumb = thumb + '-thumb.jpg'
-                    data.save()
-                  }
-                })
+        .exec()
+        .then(data => {
+          if (!data.qiniu_thumb) {
+            data.qiniu_thumb = thumb + '-thumb.jpg'
+            data.save()
+          }
+        })
     } else {
       console.log(respInfo.statusCode)
       console.log(respBody)
@@ -186,14 +184,14 @@ exports.audio = async (ctx, next) => {
   const videoId = body.videoId
   const user = ctx.session.user
 
-    // if (!audioData || !audioData.public_id) {
-    //     ctx.body = {
-    //         success: false,
-    //         err: '音频没有上传成功！'
-    //     };
+  // if (!audioData || !audioData.public_id) {
+  //     ctx.body = {
+  //         success: false,
+  //         err: '音频没有上传成功！'
+  //     };
 
-    //     return next;
-    // }
+  //     return next;
+  // }
 
   let audio = await Audio.findOne({
     public_id: audioData.public_id
@@ -220,7 +218,7 @@ exports.audio = async (ctx, next) => {
     audio = await audio.save()
   }
 
-    // 异步操作
+  // 异步操作
   asyncMedia(video._id, audio._id)
 
   ctx.body = {
@@ -329,15 +327,15 @@ exports.save = async (ctx, next) => {
 
     if (videoPublicId && audioPublicId) {
       creationData.cloudinary_thumb =
-                'http://res.cloudinary.com/gougou/video/upload/' +
-                videoPublicId +
-                '.jpg'
+        'http://res.cloudinary.com/gougou/video/upload/' +
+        videoPublicId +
+        '.jpg'
       creationData.cloudinary_video =
-                'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' +
-                audioPublicId.replace(/\//g, ':') +
-                '/' +
-                videoPublicId +
-                '.mp4'
+        'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' +
+        audioPublicId.replace(/\//g, ':') +
+        '/' +
+        videoPublicId +
+        '.mp4'
 
       creationData.finish += 20
     }

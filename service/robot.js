@@ -5,7 +5,7 @@ const cloudinary = require('cloudinary')
 const Promise = require('bluebird')
 const sha1 = require('sha1')
 const uuid = require('uuid')
-const config = require('../config/config')
+const config = require('../config')
 
 cloudinary.config(config.cloudinary)
 
