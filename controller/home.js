@@ -1,6 +1,6 @@
 'use strict'
 /* eslint no-unused-vars: */
-import { controller, get, log, required, authLogin } from '../decorator/router'
+import { controller, get, log } from '../decorator/router'
 var Mock = require('../mockjs')
 
 @controller('api/home')
