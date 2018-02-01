@@ -8,9 +8,6 @@ const router = require('koa-router')({
 const app = require('../controller/app')
 router.post('/signature', app.hasBody, app.hasToken, app.signature)
 
-const detail = require('./detail')
-router.use('/detail', detail.routes(), detail.allowedMethods())
-
 const foo = require('./foo')
 router.use('/foo', foo.routes(), foo.allowedMethods())
 
@@ -19,12 +16,6 @@ router.use('/ad', ad.routes(), ad.allowedMethods())
 
 const order = require('./order')
 router.use('/order', order.routes(), order.allowedMethods())
-
-const home = require('./home')
-router.use('/home', home.routes(), home.allowedMethods())
-
-const city = require('./city')
-router.use('/city', city.routes(), city.allowedMethods())
 
 const user = require('./users')
 router.use('/user', user.routes(), user.allowedMethods())
