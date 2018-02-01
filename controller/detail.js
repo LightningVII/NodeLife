@@ -8,7 +8,7 @@ export default class {
   /**
    * @example http://localhost:3333/api/detail
    */
-  @get('/')
+  @get('')
   @log
   async info (ctx, next) {
     let data
@@ -35,7 +35,7 @@ export default class {
   /**
    * @example http://localhost:3333/api/detail/comment/list
    */
-  @get('/comment/:type')
+  @get('comment/:type')
   @log
   async commentList (ctx, next) {
     let data
