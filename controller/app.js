@@ -1,22 +1,29 @@
 'use strict'
+/* eslint no-unused-vars: */
+import { controller, get, log } from '../decorator/router'
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const robot = require('../service/robot')
 
-exports.signature = async (ctx, next) => {
-  const body = ctx.request.body
-  const cloud = body.cloud
-  let data
+@controller('api/signature')
+export default class {
+  @get('')
+  @log
+  async signature (ctx, next) {
+    const body = ctx.request.body
+    const cloud = body.cloud
+    let data
 
-  if (cloud === 'qiniu') {
-    data = robot.getQiniuToken(body)
-  } else {
-    data = robot.getCloudinaryToken(body)
-  }
+    if (cloud === 'qiniu') {
+      data = robot.getQiniuToken(body)
+    } else {
+      data = robot.getCloudinaryToken(body)
+    }
 
-  ctx.body = {
-    success: true,
-    data: data
+    ctx.body = {
+      success: true,
+      data: data
+    }
   }
 }
 
