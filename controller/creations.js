@@ -144,7 +144,7 @@ async function asyncMedia (videoId, audioId) {
   })
 }
 
-@controller('api/creation')
+@controller('api/creations')
 export default class {
   @get('')
   @log

@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "start": "PORT=3333 nodemon bin/www --exec \"babel-node bin/www\"",
+        "start": "PORT=4000 nodemon bin/www --exec \"babel-node bin/www\"",
         "pm2": "pm2 start bin/www ",
         "test": "echo \"Error: no test specified\" && exit 1",
         "standard": "standard --fix"
