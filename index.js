@@ -2,6 +2,8 @@ import app, { loadMiddlewares } from './app'
 import { connectDB, initAdmin } from './database/init'
 const server = require('http').createServer(app.callback())
 const io = require('socket.io')(server)
+const fs = require('fs')
+const filepath = './assets/vertical/wallhaven-237043.jpg'
 console.log(initAdmin)
 ;(async () => {
   try {
@@ -31,9 +33,17 @@ console.log(initAdmin)
     })
   })
 
+  var bData = fs.readFileSync(filepath)
+  var base64Str = bData.toString('base64')
+  var datauri = 'data:image/png;base64,' + base64Str
   setInterval(() => {
-    io.emit('ping', { data: new Date() / 1 })
-  }, 10000)
+    io.emit('ping', { data: {
+      type: 'pic',
+      data: datauri
+    } })
+  }, 50000)
+
+  // new Date() / 1
 
   // http.listen(3000, function() {
   //     console.log('listening on *:3000');
