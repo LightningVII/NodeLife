@@ -26,22 +26,40 @@ console.log(initAdmin)
     ctx.body = 'hello world' + start
   })
 
-  io.on('connection', function (socket) {
-    console.log('a user connected')
-    socket.on('listen event', function (event) {
-      socket.emit('ping', { data: event })
-    })
-  })
-
   var bData = fs.readFileSync(filepath)
   var base64Str = bData.toString('base64')
   var datauri = 'data:image/png;base64,' + base64Str
-  setInterval(() => {
-    io.emit('ping', { data: {
-      type: 'pic',
-      data: datauri
-    } })
-  }, 50000)
+
+  io.on('connection', function (socket) {
+    socket.on('listen event', function (event) {
+      const dir = event.indexOf('rtl') >= 0 ? 'rtl' : 'ltr'
+      console.log(dir)
+      socket.emit('ping', {
+        data: {
+          type: 'text',
+          dir,
+          data: event
+        }
+      })
+
+      event.indexOf('Tupian') >= 0 && socket.emit('ping', {
+        data: {
+          type: 'pic',
+          data: datauri,
+          dir
+        }
+      })
+    })
+  })
+
+  /* setInterval(() => {
+    io.emit('ping', {
+      data: {
+        type: 'pic',
+        data: datauri
+      }
+    })
+  }, 50000) */
 
   // new Date() / 1
 
