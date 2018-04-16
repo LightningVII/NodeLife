@@ -77,4 +77,4 @@ console.log(initAdmin)
   // require('./tasks/trailer-to-db');
   // require('./tasks/qiniu-to-db');
 })()
-export default { app, server }
+export { app, server }
