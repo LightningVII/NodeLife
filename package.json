@@ -6,7 +6,8 @@
         "start": "PORT=4000 nodemon bin/www --exec \"babel-node bin/www\"",
         "pm2": "pm2 start bin/www ",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "standard": "standard --fix"
+        "standard": "standard --fix",
+        "server": "babel-node server.js && node server"
     },
     "dependencies": {
         "bluebird": "^3.5.0",
