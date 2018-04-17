@@ -21,10 +21,10 @@ exports.getQiniuToken = body => {
     key += '.jpeg'
   } else if (type === 'video') {
     key += '.mp4'
-        // options.persistentOps = 'avthumb/mp4/an/1';
+    // options.persistentOps = 'avthumb/mp4/an/1';
   } else if (type === 'audio') {
     key += '.aac'
-        // options.persistentOps = 'avthumb/acodec/aac';
+    // options.persistentOps = 'avthumb/acodec/aac';
   }
   const options = {
     scope: scope(key)
@@ -50,19 +50,19 @@ exports.saveToQiniu = async (url, key) => {
 exports.uploadToCloudinary = function (url) {
   return new Promise(function (resolve, reject) {
     cloudinary.uploader.upload(
-            url,
-            function (result) {
-              if (result && result.public_id) {
-                resolve(result)
-              } else {
-                reject(result)
-              }
-            },
+      url,
+      function (result) {
+        if (result && result.public_id) {
+          resolve(result)
+        } else {
+          reject(result)
+        }
+      },
       {
         resource_type: 'video',
         folder: 'video'
       }
-        )
+    )
   })
 }
 
@@ -82,7 +82,7 @@ exports.getCloudinaryToken = function (body) {
     tags = 'app,audio'
   }
 
-    // data.data
+  // data.data
   let signature =
         'folder=' +
         folder +

@@ -130,13 +130,13 @@ export const required = rules =>
   })
 */
 export const session = rules =>
-convert(async (ctx, next) => {
-  let errors = []
-  const passRules = R.forEachObjIndexed((value, key) => {
-    errors = R.filter(i => !R.has(i, ctx.session[key]))(value)
-  })
-  passRules(rules)
+  convert(async (ctx, next) => {
+    let errors = []
+    const passRules = R.forEachObjIndexed((value, key) => {
+      errors = R.filter(i => !R.has(i, ctx.session[key]))(value)
+    })
+    passRules(rules)
 
-  if (errors.length) ctx.throw(412, `${errors.join(',')} is required`)
-  await next()
-})
+    if (errors.length) ctx.throw(412, `${errors.join(',')} is required`)
+    await next()
+  })

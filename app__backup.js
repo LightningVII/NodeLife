@@ -47,7 +47,7 @@ const index = require('./routes/index')
 app.proxy = false
 onerror(app)
 
-app.use(async(ctx, next) => {
+app.use(async (ctx, next) => {
   const start = new Date()
   const ms = new Date() - start
   const body = ctx.request && ctx.request.body

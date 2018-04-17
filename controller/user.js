@@ -78,7 +78,7 @@ export default class {
     }
   }
 
-/**
+  /**
  * @example fetch('/api/user/verify', {
     method: 'POST',
     credentials: 'include',
