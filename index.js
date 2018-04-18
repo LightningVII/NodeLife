@@ -31,6 +31,39 @@ console.log(initAdmin)
   var datauri = 'data:image/png;base64,' + base64Str
 
   io.on('connection', function (socket) {
+    socket.on('login', function (event) {
+      users.push({
+        name: event,
+        id: socket.id
+      })
+      socket.broadcast.emit('msg', {
+        id: socket.id,
+        name: event,
+        word: 'joined'
+      })
+      socket.emit('msg', {
+        id: socket.id,
+        name: event,
+        word: '我登陆了'
+      })
+    })
+
+    socket.on('self-words', function (event) {
+      socket.emit('msg', {
+        id: socket.id,
+        name: event,
+        word: '自言自语'
+      })
+    })
+
+    socket.on('toSomebody', function (event) {
+      socket.to(event).emit('msg', {
+        id: event,
+        name: find(socket.id).name,
+        word: find(socket.id).name + '对我说'
+      })
+    })
+
     socket.on('listen event', function (event) {
       const dir = event.indexOf('rtl') >= 0 ? 'rtl' : 'ltr'
       console.log(dir)
@@ -42,13 +75,14 @@ console.log(initAdmin)
         }
       })
 
-      event.indexOf('Tupian') >= 0 && socket.emit('ping', {
-        data: {
-          type: 'pic',
-          data: datauri,
-          dir
-        }
-      })
+      event.indexOf('Tupian') >= 0 &&
+        socket.emit('ping', {
+          data: {
+            type: 'pic',
+            data: datauri,
+            dir
+          }
+        })
     })
   })
 

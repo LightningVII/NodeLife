@@ -6,7 +6,6 @@
 		"start": "PORT=4000 nodemon bin/www --exec \"babel-node bin/www\"",
 		"pm2": "pm2 start bin/www ",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"standard": "standard --fix",
 		"server": "babel-node index2.js && node index2"
 	},
 	"dependencies": {
@@ -43,19 +42,6 @@
 		"babel-plugin-transform-runtime": "^6.23.0",
 		"babel-preset-env": "^1.6.1",
 		"babel-preset-stage-3": "^6.24.1",
-		"nodemon": "^1.17.3",
-		"pre-commit": "^1.2.2",
-		"standard": "^11.0.1"
-	},
-	"pre-commit": [
-		"standard"
-	],
-	"precommit.silent": true,
-	"standard": {
-		"ignore": [],
-		"parser": "babel-eslint",
-		"globals": [
-			"fetch"
-		]
+		"nodemon": "^1.17.3"
 	}
 }
