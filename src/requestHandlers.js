@@ -1,7 +1,6 @@
-import querystring from 'querystring'
 import formidable from 'formidable'
-import util from 'util'
 import fs from 'fs'
+import path from 'path'
 
 const form = new formidable.IncomingForm()
 
@@ -14,9 +13,9 @@ const start = res => {
     'charset=UTF-8" />' +
     '</head>' +
     '<body>' +
-    '<form action="/upload" method="post">' +
-    '<textarea name="text" rows="20" cols="60"></textarea>' +
-    '<input type="submit" value="Submit text" />' +
+    '<form action="/upload" enctype="multipart/form-data" method="post">' +
+    '<input type="file" name="upload" multiple="multiple">' +
+    '<input type="submit" value="Upload file" />' +
     '</form>' +
     '</body>' +
     '</html>'
@@ -25,22 +24,22 @@ const start = res => {
   res.end()
 }
 
-const upload = (res, postData) => {
+const upload = (res, req) => {
   console.log("Request handler 'upload' was called.")
-  form.parse(postData, (err, fields, files) => {
-    err && console.log(err)
-    res.writeHead(200, { 'content-type': 'text/plain' })
-    res.write('received upload:\n\n')
-    res.end(util.inspect({ fields: fields, files: files }))
+  form.parse(req, (error, fields, files) => {
+    error && console.log(error)
+    console.log(files.upload.path)
+    fs.renameSync(files.upload.path, path.join(__dirname, 'tmp/test1.png'))
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    res.write('received image:<br/>')
+    res.write("<img src='/show' />")
+    res.end()
   })
-  res.writeHead(200, { 'Content-Type': 'text/plain' })
-  res.write("You've sent the text: " + querystring.parse(postData).text)
-  res.end()
 }
 
 const show = res => {
   console.log("Request handler 'show' was called.")
-  fs.readFile('/tmp/test.png', 'binary', (error, file) => {
+  fs.readFile(path.join(__dirname, 'tmp/test1.png'), 'binary', (error, file) => {
     if (error) {
       res.writeHead(500, { 'Content-Type': 'text/plain' })
       res.write(error + '\n')

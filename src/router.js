@@ -1,6 +1,6 @@
-const route = (handle, pathname, res, postData) => {
+const route = (handle, pathname, res, req) => {
   if (typeof handle[pathname] === 'function') {
-    handle[pathname](res, postData)
+    handle[pathname](res, req)
   } else {
     console.log('No request handler found for ' + pathname)
     res.writeHead(404, { 'Content-Type': 'text/plain' })
