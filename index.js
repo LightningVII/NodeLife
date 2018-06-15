@@ -9,7 +9,7 @@ console.log(initAdmin)
   try {
     await connectDB()
     await loadMiddlewares(app)
-    // await initAdmin()
+    await initAdmin()
   } catch (err) {
     console.log(err)
   }
@@ -19,12 +19,12 @@ console.log(initAdmin)
         res.sendfile('index.html');
     }); */
 
-  app.use(async (ctx, next) => {
+  /* app.use(async (ctx, next) => {
     const start = new Date()
     // const ms = new Date() - start
     // const body = ctx.request && ctx.request.body
     ctx.body = 'hello world' + start
-  })
+  }) */
 
   var bData = fs.readFileSync(filepath)
   var base64Str = bData.toString('base64')

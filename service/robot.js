@@ -1,13 +1,13 @@
 'use strict'
 
 const qiniu = require('qiniu')
-const cloudinary = require('cloudinary')
+// const cloudinary = require('cloudinary')
 const Promise = require('bluebird')
 const sha1 = require('sha1')
 const uuid = require('uuid')
 const config = require('../config')
 
-cloudinary.config(config.cloudinary)
+// cloudinary.config(config.cloudinary)
 
 exports.getQiniuToken = body => {
   const { qiniu: { BUCKET, AK, SK } } = config

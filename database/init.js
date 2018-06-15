@@ -9,14 +9,10 @@ export const connectDB = () => {
       mongoose.set('debug', true)
     }
 
-    mongoose.connect(config.db, {
-      useMongoClient: true
-    })
+    mongoose.connect(config.db)
 
     mongoose.connection.on('disconnected', () => {
-      mongoose.connect(config.db, {
-        useMongoClient: true
-      })
+      mongoose.connect(config.db)
     })
 
     mongoose.connection.on('error', err => {

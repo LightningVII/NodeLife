@@ -5,9 +5,7 @@ const db = 'mongodb://localhost/my-imooc'
 
 mongoose.Promise = global.Promise
 mongoose.Promise = require('bluebird')
-mongoose.connect(db, {
-  useMongoClient: true
-})
+mongoose.connect(db)
 
 const modelsPath = path.join(__dirname, '/models')
 const walk = modelPath => {
