@@ -3,9 +3,9 @@
 import { controller, get, log } from '../decorator/router'
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
-const robot = require('../service/robot')
+// const robot = require('../service/robot')
 
-@controller('api/signature')
+/* @controller('api/signature')
 export default class {
   @get('')
   @log
@@ -25,7 +25,7 @@ export default class {
       data: data
     }
   }
-}
+} */
 
 exports.hasBody = async (ctx, next) => {
   const body = ctx.request.body || {}

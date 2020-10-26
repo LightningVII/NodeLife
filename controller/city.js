@@ -7,12 +7,25 @@ var Mock = require('../mockjs')
 export default class {
   @get('')
   @log
-  async (ctx, next) {
+  async list (ctx, next) {
     const data = Mock.mock({
-      'result|16': [{
+      'result|3': [{
         cityName: '@city',
         id: '@ID'
       }]
+    })
+    ctx.body = JSON.stringify(data, null, 4)
+  }
+
+  @get('/:id')
+  @log
+  async detail (ctx, next) {
+    console.log(ctx.params.id)
+    const data = Mock.mock({
+      'result': {
+        id: ctx.params.id,
+        cityName: '@city'
+      }
     })
     ctx.body = JSON.stringify(data, null, 4)
   }

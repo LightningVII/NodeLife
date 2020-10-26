@@ -7,7 +7,7 @@ const filepath = './assets/vertical/wallhaven-237043.jpg'
 console.log(initAdmin)
 ;(async () => {
   try {
-    await connectDB()
+    // await connectDB()
     await loadMiddlewares(app)
     await initAdmin()
   } catch (err) {
@@ -29,7 +29,10 @@ console.log(initAdmin)
   var bData = fs.readFileSync(filepath)
   var base64Str = bData.toString('base64')
   var datauri = 'data:image/png;base64,' + base64Str
-
+  var users = []
+  var find = id => users.find((v) => {
+    return v.id === id;
+  })
   io.on('connection', function (socket) {
     socket.on('login', function (event) {
       users.push({
